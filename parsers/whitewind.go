@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/Zhalkhas/homehack_backend/models"
+	"github.com/Zhalkhas/homehack_backend/utils"
 	"net/http"
 	"regexp"
 	"strconv"
-	"strings"
-	"unicode"
 )
 
 var whitewindRegex = regexp.MustCompile("https://shop\\.kz/bitrix/tools/track_qr\\.php\\?art=([0-9]+)")
@@ -39,7 +38,7 @@ func (w *WhitewindParser) Parse(qrCode string) (*models.ProductInfo, error) {
 		return nil, err
 	}
 	priceStr := reader.Find(".item_current_price").First().Text()
-	price, err := strconv.ParseFloat(extractNums(priceStr), 64)
+	price, err := strconv.ParseFloat(utils.ExtractPrice(priceStr), 64)
 	if err != nil {
 		return nil, err
 	}
@@ -54,14 +53,4 @@ func (w *WhitewindParser) Parse(qrCode string) (*models.ProductInfo, error) {
 		}
 	}
 	return &models.ProductInfo{Price: price, Name: title}, nil
-}
-
-func extractNums(str string) string {
-	builder := strings.Builder{}
-	for _, ch := range str {
-		if unicode.IsDigit(ch) {
-			builder.WriteRune(ch)
-		}
-	}
-	return builder.String()
 }

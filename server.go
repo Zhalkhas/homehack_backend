@@ -16,6 +16,7 @@ func initParsers() []parsers.Parser {
 	var res []parsers.Parser
 	res = append(res, &parsers.WhitewindParser{})
 	res = append(res, &parsers.TechnodomParser{})
+	res = append(res, &parsers.SulpakParser{})
 	return res
 }
 
@@ -38,8 +39,9 @@ type QrDetectReq struct {
 
 func (app *App) handleQR(ctx *gin.Context) {
 	req := &QrDetectReq{}
-	err := ctx.Bind(req)
+	err := ctx.BindJSON(req)
 	if err != nil {
+		fmt.Println(err)
 		ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
